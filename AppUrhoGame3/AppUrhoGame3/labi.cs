@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace AppUrhoGame3
 {
-    class labi
+    class LabiData
     {
         private int x = 0;
         private int y = 0;
 
-        List<labicase> map;
+        List<Case> map;
 
         enum E_Etat
         {
@@ -19,11 +19,11 @@ namespace AppUrhoGame3
             path = 1
         };
 
-        public labi(int paramx, int paramy)
+        public LabiData(int paramx, int paramy)
         {
             x = paramx;
             y = paramy;
-            map = new List<labicase>(x * y);
+            map = new List<Case>(x * y);
         }
 
 
@@ -33,7 +33,7 @@ namespace AppUrhoGame3
             {
                 for (int j = 0; j < x; j++)
                 {
-                    map.Add(new labicase(E_Etat.wall, E_Etat.wall, E_Etat.wall, E_Etat.wall, i * x + j));
+                    map.Add(new Case(E_Etat.wall, E_Etat.wall, E_Etat.wall, E_Etat.wall, i * x + j));
                 }
             }
         }
@@ -43,8 +43,8 @@ namespace AppUrhoGame3
             Random rng = new Random();
             int tot = x * y;
 
-            labicase jonc = null;
-            labicase open = null;
+            Case jonc = null;
+            Case open = null;
 
             int id = 0;
             int bord = 0;
@@ -98,7 +98,7 @@ namespace AppUrhoGame3
 
         private void extendColor(int baseColor, int setColor)
         {
-            foreach (labicase lb in map)
+            foreach (Case lb in map)
             {
                 if (lb.color == setColor)
                     lb.color = baseColor;
@@ -114,10 +114,6 @@ namespace AppUrhoGame3
             {
                 for (int j = 0; j < x; j++)
                 {
-                    //if (map[i * x + j].left == E_Etat.wall)
-                    //    line += "|";
-                    //else
-                    //    line += " ";
                     if (map[i * x + j].bot == E_Etat.wall)
                         line += "_";
                     else
@@ -134,28 +130,28 @@ namespace AppUrhoGame3
         }
 
 
-        private labicase getEstLabicase(labicase lb)
+        private Case getEstLabicase(Case lb)
         {
             if (x - 1 == lb.id % x)
                 return null;
             return map[lb.id + 1];
         }
 
-        private labicase getOuestLabicase(labicase lb)
+        private Case getOuestLabicase(Case lb)
         {
             if (0 == (lb.id % x))
                 return null;
             return map[lb.id - 1];
         }
 
-        private labicase getNordLabicase(labicase lb)
+        private Case getNordLabicase(Case lb)
         {
             if (lb.id < x)
                 return null;
             return map[lb.id - x];
         }
 
-        private labicase getSudLabicase(labicase lb)
+        private Case getSudLabicase(Case lb)
         {
             if (lb.id >= x * y - x)
                 return null;
@@ -167,7 +163,7 @@ namespace AppUrhoGame3
         {
             int ret = map.First().color;
 
-            foreach (labicase lb in map)
+            foreach (Case lb in map)
             {
                 if (lb.color != ret)
                     return true;
@@ -177,7 +173,7 @@ namespace AppUrhoGame3
 
 
 
-        class labicase
+        class Case
         {
             public E_Etat top { get; set; }
             public E_Etat bot { get; set; }
@@ -187,7 +183,7 @@ namespace AppUrhoGame3
             public int color { get; set; }
             public int id { get; set; }
 
-            public labicase(E_Etat paramtop, E_Etat parambot, E_Etat paramleft, E_Etat paramright, int _id)
+            public Case(E_Etat paramtop, E_Etat parambot, E_Etat paramleft, E_Etat paramright, int _id)
             {
                 top = paramtop;
                 bot = parambot;

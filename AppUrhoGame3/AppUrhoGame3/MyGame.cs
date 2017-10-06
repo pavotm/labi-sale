@@ -27,7 +27,7 @@ namespace AppUrhoGame3
 
         protected override void Start()
         {
-            labi lb = new labi(100 , 50);
+            LabiData lb = new LabiData(50 , 50);
             lb.generateLabicase();
             lb.generatelabi();
             lb.printLabi();
