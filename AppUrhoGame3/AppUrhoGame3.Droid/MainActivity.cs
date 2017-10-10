@@ -15,7 +15,7 @@ namespace AppUrhoGame3.Droid
         ScreenOrientation = ScreenOrientation.Landscape)]
     public class MainActivity : Android.App.Activity
     {
-        MyGame myGame;
+        Game myGame;
 
         protected override async void OnCreate(Bundle bundle)
         {
@@ -24,7 +24,7 @@ namespace AppUrhoGame3.Droid
             var surface = UrhoSurface.CreateSurface(this);
             layout.AddView(surface);
             SetContentView(layout);
-            myGame = await surface.Show<MyGame>(new ApplicationOptions("Data"));
+            myGame = await surface.Show<Game>(new ApplicationOptions("Data"));
             //to stop the game use await surface.Stop().
         }
 

@@ -35,7 +35,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DrawLab.cs" />
-    <Compile Include="labi.cs" />
+    <Compile Include="Maze.cs" />
+    <Compile Include="MazeGenerator.cs" />
     <Compile Include="MyGame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

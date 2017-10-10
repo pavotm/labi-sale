@@ -6,7 +6,7 @@ namespace AppUrhoGame3.Desktop
     {
         static void Main(string[] args)
         {
-            new MyGame(new ApplicationOptions("Data")).Run();
+            new Game(new ApplicationOptions("Data")).Run();
         }
     }
 }

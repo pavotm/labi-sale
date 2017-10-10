@@ -156,6 +156,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AppUrhoGame3\AppUrhoGame3.csproj">
       <Name>AppUrhoGame3</Name>
+      <Project>{47BBBF31-9620-4C61-81BA-EAA693F72A78}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

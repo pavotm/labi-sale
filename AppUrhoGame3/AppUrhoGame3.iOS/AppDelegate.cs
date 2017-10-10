@@ -20,7 +20,7 @@ namespace AppUrhoGame3.iOS
         async void LaunchGame()
         {
             await Task.Yield();
-            new MyGame(new ApplicationOptions("Data")).Run();
+            new Game(new ApplicationOptions("Data")).Run();
         }
     }
 }
