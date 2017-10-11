@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="Kruskal.cs" />
     <Compile Include="DrawLab.cs" />
+    <Compile Include="labi.cs" />
     <Compile Include="Maze.cs" />
     <Compile Include="GrowingTree.cs" />
     <Compile Include="MyGame.cs" />
