@@ -69,7 +69,7 @@ namespace Maze
 
         public Cell<DataCell, DataWall> OtherCell(Wall<DataCell, DataWall> wall)
         {
-            return wall.First == this ? wall.Second : wall.First;
+            return ReferenceEquals(wall.First, this) ? wall.Second : wall.First;
         }
 
         public bool IsOpenWith(Cell<DataCell, DataWall> other)

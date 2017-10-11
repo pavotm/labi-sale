@@ -5,6 +5,8 @@ using Urho;
 using Urho.Actions;
 using Urho.Gui;
 using Maze;
+using Urho.Audio;
+using Kruskal;
 
 namespace AppUrhoGame3
 {
@@ -23,7 +25,7 @@ namespace AppUrhoGame3
             };
         }
 
-        void PrintMaze(List<Cell<Data, Object>> cells, int x, int y)
+        void PrintMaze(List<Cell<DataCell, DataWall>> cells, int x, int y)
         {
             string line = "";
 
@@ -82,43 +84,59 @@ namespace AppUrhoGame3
             System.Diagnostics.Debug.WriteLine(String.Concat(Enumerable.Repeat("‾", x * 2 + 1)));
         }
 
-        class Data : IData
+        class DataCell : GrowingTree.IDataCell, Kruskal.IDataCell
         {
             public bool Visited { get; set; }
-            public Data()
+            public UnionFindNode Node { get; set; }
+        }
+
+        class DataWall : Kruskal.IDataWall
+        {
+            public bool Visited { get; set; }
+        }
+
+        private List<Cell<DataCell, DataWall>> createMaze(int x, int y)
+        {
+            List<Cell<DataCell, DataWall>> cells;
+            cells = new List<Cell<DataCell, DataWall>>(x * y)
             {
+                new Cell<DataCell, DataWall>(/*0, 0, 0, */new List<Wall<DataCell, DataWall>>(), new DataCell())
+            };
+            for (int i = 1; i < x; i++)
+            {
+                cells.Add(new Cell<DataCell, DataWall>(/*i, i, 0, */new List<Wall<DataCell, DataWall>>(), new DataCell()));
+                new Wall<DataCell, DataWall>(cells[i], cells[i - 1], false, new DataWall());
             }
+            for (int i = 1; i < y; i++)
+            {
+                cells.Add(new Cell<DataCell, DataWall>(/*i * x, 0, i, */new List<Wall<DataCell, DataWall>>(), new DataCell()));
+                new Wall<DataCell, DataWall>(cells[i * x], cells[(i - 1) * x], false, new DataWall());
+                for (int j = 1; j < x; j++)
+                {
+                    cells.Add(new Cell<DataCell, DataWall>(/*i * x + j, j, i, */new List<Wall<DataCell, DataWall>>(), new DataCell()));
+                    new Wall<DataCell, DataWall>(cells[i * x + j], cells[(i - 1) * x + j], false, new DataWall());
+                    new Wall<DataCell, DataWall>(cells[i * x + j], cells[i * x + j - 1], false, new DataWall());
+                }
+            }
+
+            return cells;
         }
 
         protected override void Start()
         {
+            int x = 200;
+            int y = 200;
+
+            var test1 = createMaze(x, y);
+            Kruskal.Kruskal<DataCell, DataWall>.generate(test1);
+            PrintMaze(test1, x, y);
+
+            var test2 = createMaze(x, y);
+            GrowingTree.GrowingTree<DataCell, DataWall>.generate(test2);
+            PrintMaze(test2, x, y);
+
             CreateScene();
-            List<Cell<Data, Object>> cells;
-            int x = 20;
-            int y = 20;
-            cells = new List<Cell<Data, Object>>(x * y)
-            {
-                new Cell<Data, Object>(/*0, 0, 0, */new List<Wall<Data, Object>>(), new Data())
-            };
-            for (int i = 1; i < x; i++)
-            {
-                cells.Add(new Cell<Data, Object>(/*i, i, 0, */new List<Wall<Data, Object>>(), new Data()));
-                new Wall<Data, Object>(cells[i], cells[i - 1], false, null);
-            }
-            for (int i = 1; i < y; i++)
-            {
-                cells.Add(new Cell<Data, Object>(/*i * x, 0, i, */new List<Wall<Data, Object>>(), new Data()));
-                new Wall<Data, Object>(cells[i * x], cells[(i - 1) * x], false, null);
-                for (int j = 1; j < x; j++)
-                {
-                    cells.Add(new Cell<Data, Object>(/*i * x + j, j, i, */new List<Wall<Data, Object>>(), new Data()));
-                    new Wall<Data, Object>(cells[i * x + j], cells[(i - 1) * x + j], false, null);
-                    new Wall<Data, Object>(cells[i * x + j], cells[i * x + j - 1], false, null);
-                }
-            }
-            PrintMaze(cells, x, y);
-            MazeGenerator<Data, Object>.generate(cells);
-            PrintMaze(cells, x, y);
+
             Input.KeyDown += (args) => {
                 if (args.Key == Key.Esc) Exit();
             };
@@ -142,6 +160,12 @@ namespace AppUrhoGame3
             // 3D scene with Octree
             var scene = new Scene(Context);
             scene.CreateComponent<Octree>();
+
+            // Sound
+            Node soundNode = scene.CreateChild(name: "Sound");
+            var sound = soundNode.CreateComponent<SoundSource>();
+            sound.Play(ResourceCache.GetSound("Sounds/Glorious_morning.wav"));
+
 
             // Box
             Node boxNode = scene.CreateChild(name: "Box node");

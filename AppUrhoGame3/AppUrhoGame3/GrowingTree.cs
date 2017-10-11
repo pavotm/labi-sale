@@ -3,10 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Maze;
 
-namespace Maze
+namespace GrowingTree
 {
-    class MazeGenerator<DataCell, DataWall> where DataCell : IData
+    interface IDataCell
+    {
+        bool Visited { get; set; }
+    }
+
+    class GrowingTree<DataCell, DataWall> where DataCell : IDataCell
     {
         static public void generate(List<Cell<DataCell, DataWall>> cells)
         {
@@ -35,14 +41,14 @@ namespace Maze
             }
         }
 
-        static public Cell<DataCell, DataWall> PickRandomCellAndMarkIt(List<Cell<DataCell, DataWall>> cells, Random rng)
+        static private Cell<DataCell, DataWall> PickRandomCellAndMarkIt(List<Cell<DataCell, DataWall>> cells, Random rng)
         {
             Cell<DataCell, DataWall> cell = cells[rng.Next(cells.Count())];
             cell.Data.Visited = true;
             return cell;
         }
 
-        static public int NumberCloseWallToUnvisitedCell(Cell<DataCell, DataWall> cell)
+        static private int NumberCloseWallToUnvisitedCell(Cell<DataCell, DataWall> cell)
         {
             int n = 0;
 
@@ -84,10 +90,5 @@ namespace Maze
 
             return null;
         }
-    }
-
-    interface IData
-    {
-        bool Visited { get; set; }
     }
 }
