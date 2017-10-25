@@ -90,31 +90,16 @@ namespace Kruskal
 
     class Kruskal<DataCell, DataWall> where DataCell : IDataCell where DataWall : IDataWall
     {
-        static public void generate(List<Cell<DataCell, DataWall>> cells)
+        static public void generate(List<Cell<DataCell, DataWall>> cells, List<Wall<DataCell, DataWall>> walls)
         {
-            var walls = new List<Wall<DataCell, DataWall>>();
-
             foreach (var cell in cells)
             {
                 cell.Data.Node = new UnionFindNode();
-                foreach (var wall in cell.Walls)
-                {
-                    wall.Data.Visited = false;
-                }
             }
-
-            foreach (var cell in cells)
+            foreach (var wall in walls)
             {
-                foreach (var wall in cell.Walls)
-                {
-                    if (wall.Data.Visited == false)
-                    {
-                        wall.Data.Visited = true;
-                        walls.Add(wall);
-                    }
-                }
+                wall.Data.Visited = false;
             }
-
             Random rng = new Random();
             int n = walls.Count;
             while (n > 1)

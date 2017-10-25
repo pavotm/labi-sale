@@ -4,6 +4,18 @@ using System.Linq;
 
 namespace Maze
 {
+    public class Maze<DataCell, DataWall>
+    {
+        public List<Cell<DataCell, DataWall>> Cells { get; set; }
+        public List<Wall<DataCell, DataWall>> Walls { get; set; }
+
+        public Maze(List<Cell<DataCell, DataWall>> cells, List<Wall<DataCell, DataWall>> walls)
+        {
+            Cells = cells;
+            Walls = walls;
+        }
+    }
+
     public class Wall<DataCell, DataWall>
     {
         public DataWall Data { get; set; }
