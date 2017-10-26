@@ -13,6 +13,9 @@ namespace AppUrhoGame3
 {
     public class Game : Application
     {
+
+        Camera cam;
+
         [Preserve]
         public Game(ApplicationOptions opts) : base(opts) { }
 
@@ -142,9 +145,49 @@ namespace AppUrhoGame3
             var test2 = createMaze(x, y);
             GrowingTree.GrowingTree<DataCell, DataWall>.generate(test2.Cells);
             PrintMaze(test2.Cells, x, y);
+            Urho.IO.Log.Write(LogLevel.Debug, cam.Node.Direction.ToString());
 
+            Input.MouseMoved += (args) =>
+            {
+                var v = cam.Node.Rotation;
+//                cam.Node.Rotate(new Quaternion(new Vector3(args.DX / 10, args.DY / 10, 0), 20), TransformSpace.Local);
+
+                cam.Node.Rotate(new Quaternion(args.DY , args.DX, 0), TransformSpace.Local);
+                Urho.IO.Log.Write(LogLevel.Debug, cam.Node.Direction.ToString());
+            };
+            
 
             Input.KeyDown += (args) => {
+                if (args.Key == Key.Z)
+                {
+                    var v = cam.Node.Position;
+                    cam.Node.Position = new Vector3(v.X, v.Y, v.Z + 4);
+                }
+                if (args.Key == Key.S)
+                {
+                    var v = cam.Node.Position;
+                    cam.Node.Position = new Vector3(v.X, v.Y, v.Z - 4);
+                }
+                if (args.Key == Key.Q)
+                {
+                    var v = cam.Node.Position;
+                    cam.Node.Position = new Vector3(v.X, v.Y - 4, v.Z);
+                }
+                if (args.Key == Key.D)
+                {
+                    var v = cam.Node.Position;
+                    cam.Node.Position = new Vector3(v.X, v.Y + 4, v.Z);
+                }
+                if (args.Key == Key.A)
+                {
+                    var v = cam.Node.Position;
+                    cam.Node.Position = new Vector3(v.X + 4, v.Y, v.Z);
+                }
+                if (args.Key == Key.E)
+                {
+                    var v = cam.Node.Position;
+                    cam.Node.Position = new Vector3(v.X - 4, v.Y, v.Z);
+                }
                 if (args.Key == Key.Esc) Exit();
             };
         }
@@ -172,9 +215,6 @@ namespace AppUrhoGame3
             var debug = scene.CreateComponent<DebugRenderer>();
 
             // Sound
-            Node soundNode = scene.CreateChild(name: "Sound");
-            var sound = soundNode.CreateComponent<SoundSource>();
-            sound.Play(ResourceCache.GetSound("Sounds/Glorious_morning.wav"));
 
 
             // Box
@@ -190,12 +230,12 @@ namespace AppUrhoGame3
             // Light
             Node lightNode = scene.CreateChild(name: "light");
             var light = lightNode.CreateComponent<Light>();
-            light.Range = 10;
-            light.Brightness = 10.5f;
+            light.Range = 1000;
+            light.Brightness = 2;
 
             // Camera
             Node cameraNode = scene.CreateChild(name: "camera");
-            Camera camera = cameraNode.CreateComponent<Camera>();
+            cam = cameraNode.CreateComponent<Camera>();
 
             // Terrain
             var terrainNode = scene.CreateChild();
@@ -213,20 +253,9 @@ namespace AppUrhoGame3
             terrain.Material = ResourceCache.GetMaterial("Materials/BoxMaterial.xml");
             terrain.CastShadows = true;
             terrain.Occluder = true;
-            // the heightmap system can automatically mark objects as invisible that are
-            // behind parts of the terrain (like behind a mountain). This improves
-            // the rendering performance and is called occluding.
-
-            // moves 10x10 pixel under the camera up by 10%
-            IntVector2 v = terrain.WorldToHeightMap(cameraNode.WorldPosition);
-            var i = terrain.HeightMap;
-            for (int x = -10; x < 10; x++)
-                for (int y = -10; y < 10; y++)
-                    i.SetPixel(v.X + x, v.Y + y, i.GetPixel(v.X + x, v.Y + y) + new Color(0.1f, 0.1f, 0.1f));
-            terrain.ApplyHeightMap();  // has to be called to apply the changes
 
             // Viewport
-            Renderer.SetViewport(0, new Viewport(Context, scene, camera, null));
+            Renderer.SetViewport(0, new Viewport(Context, scene, cam, null));
             Renderer.GetViewport(0).DrawDebug = true;
             scene.SaveJson(new Urho.IO.File(Context, "save.json", Urho.IO.FileMode.Write), "  ");
             // Do actions
