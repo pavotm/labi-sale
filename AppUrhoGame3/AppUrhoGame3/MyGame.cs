@@ -7,7 +7,7 @@ using Urho.Gui;
 using Maze;
 using Urho.Audio;
 using Kruskal;
-using Urho.Urho2D;
+using Urho.Physics;
 
 namespace AppUrhoGame3
 {
@@ -157,7 +157,14 @@ namespace AppUrhoGame3
 
         protected override void Start()
         {
+
+
+
+
             scene = CreateScene();
+            
+
+
 
             int x = 10;
             int y = 10;
@@ -172,6 +179,11 @@ namespace AppUrhoGame3
                 
 
                 StaticModel boxModel = cell.Data.DrawNode.CreateComponent<StaticModel>();
+                var box = cell.Data.DrawNode.CreateComponent<RigidBody>();
+                var phy = cell.Data.DrawNode.CreateComponent<PhysicsWorld>();
+                box.Mass = 1; 
+                phy.SetGravity(new Vector3(1, 0, 0));
+
                 boxModel.Model = ResourceCache.GetModel("Models/Box.mdl");
                 boxModel.SetMaterial(ResourceCache.GetMaterial("Materials/BoxMaterial.xml"));
             }
@@ -179,7 +191,6 @@ namespace AppUrhoGame3
             Input.MouseMoved += (args) =>
             {
                 var v = cam.Node.Rotation;
-//                cam.Node.Rotate(new Quaternion(new Vector3(args.DX / 10, args.DY / 10, 0), 20), TransformSpace.Local);
 
                 cam.Node.Rotate(new Quaternion(args.DY , args.DX, 0), TransformSpace.Local);
                 Urho.IO.Log.Write(LogLevel.Debug, cam.Node.Direction.ToString());
@@ -235,6 +246,9 @@ namespace AppUrhoGame3
 
         Scene CreateScene()
         {
+            
+
+
             Log.LogLevel = LogLevel.Debug;
             Urho.IO.Log.Write(LogLevel.Debug, "test");
             // UI text 
@@ -252,19 +266,33 @@ namespace AppUrhoGame3
             var scene = new Scene(Context);
             scene.CreateComponent<Octree>();
             var debug = scene.CreateComponent<DebugRenderer>();
+            var nodeTerre = scene.CreateChild();
+
+            var terre = nodeTerre.CreateComponent<Terrain>();
+            nodeTerre.Position = new Vector3(x: 100, y: 100, z: 100);
+            terre.SetHeightMap(ResourceCache.GetImage("Textures/GroundStone.jpg"));
+            terre.Spacing = new Vector3(2, 0.5f, 2);
+            terre.Smoothing = true;
+
+            //            terre.SetPatchSizeAttr(1000);
+
+            terre.Material = ResourceCache.GetMaterial("Materials/terrain.xml");
+            terre.CastShadows = true;
+            terre.Occluder = true;
+
 
             // Sound
 
 
-            // Box
-            Node boxNode = scene.CreateChild(name: "Box node");
-            boxNode.Position = new Vector3(x: 0, y: 0, z: 5);
-            boxNode.SetScale(0f);
-            boxNode.Rotation = new Quaternion(x: 60, y: 0, z: 30);
+            //// Box
+            //Node boxNode = scene.CreateChild(name: "Box node");
+            //boxNode.Position = new Vector3(x: 0, y: 0, z: 5);
+            //boxNode.SetScale(0f);
+            //boxNode.Rotation = new Quaternion(x: 60, y: 0, z: 30);
 
-            StaticModel boxModel = boxNode.CreateComponent<StaticModel>();
-            boxModel.Model = ResourceCache.GetModel("Models/Box.mdl");
-            boxModel.SetMaterial(ResourceCache.GetMaterial("Materials/BoxMaterial.xml"));
+            //StaticModel boxModel = boxNode.CreateComponent<StaticModel>();
+            //boxModel.Model = ResourceCache.GetModel("Models/Box.mdl");
+            //boxModel.SetMaterial(ResourceCache.GetMaterial("Materials/BoxMaterial.xml"));
 
             // Light
             Node lightNode = scene.CreateChild(name: "light");
@@ -276,30 +304,16 @@ namespace AppUrhoGame3
             Node cameraNode = scene.CreateChild(name: "camera");
             cam = cameraNode.CreateComponent<Camera>();
 
-            // Terrain
-            var terrainNode = scene.CreateChild();
-            terrainNode.Position = new Vector3(x: 0, y: 0, z: -5);      // and change its position
-            var terrain = terrainNode.CreateComponent<Terrain>();
-            terrain.Spacing = new Vector3(2, 0.5f, 2);
-            // the spacing specifies the distance in world units between each heigtmap pixel (XZ)
-            // or height value (Y)
-
-            terrain.Smoothing = true;
-            // the smoothing specifies if there should be interpolated vertices between heightmap
-            // pixels
-
-            terrain.SetHeightMap(ResourceCache.GetImage("Textures/xamarin.png"));
-            terrain.Material = ResourceCache.GetMaterial("Materials/BoxMaterial.xml");
-            terrain.CastShadows = true;
-            terrain.Occluder = true;
-
             // Viewport
             Renderer.SetViewport(0, new Viewport(Context, scene, cam, null));
             Renderer.GetViewport(0).DrawDebug = true;
             scene.SaveJson(new Urho.IO.File(Context, "save.json", Urho.IO.FileMode.Write), "  ");
 
-            return scene;
 
+            PhysicsWorld physics = scene.CreateComponent<PhysicsWorld>();
+            physics.SetGravity(new Vector3(10, 0, 0));
+
+            return scene;
         }
 
 

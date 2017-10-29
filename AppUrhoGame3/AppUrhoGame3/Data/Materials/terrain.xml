@@ -1,0 +1,4 @@
+﻿<material>
+  <technique name="Techniques/Diff.xml" />
+  <texture unit="normal" name="Textures/GroundStone.jpg" />
+</material>
